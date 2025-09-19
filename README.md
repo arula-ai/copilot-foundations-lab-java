@@ -1,4 +1,4 @@
-# GitHub Copilot Foundations - Lab 1: Refactoring with Confidence (Java)
+# Arula.AI Training - GitHub Copilot Foundations - Lab 1: Refactoring with Confidence (Java)
 
 ## ⚠️ Warning
 This repository contains intentionally problematic code for training purposes. 
