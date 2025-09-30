@@ -271,3 +271,9 @@ After completing this workshop:
 ---
 
 **Remember**: This code is intentionally bad for educational purposes. Always follow secure coding practices in real applications!
+
+## Copyright and License
+
+Copyright © 2025 InRhythm Arula Labs. All rights reserved.
+
+This material is proprietary and confidential. Unauthorized copying, distribution, or use of this material, via any medium, is strictly prohibited without the express written permission of InRhythm Arula Labs.
