@@ -51,6 +51,7 @@
 20. Iterate: `/tests Add edge-case coverage for invalid dates, DST transitions, and leap years using JUnit 5.`
 21. For time-sensitive logic, prompt: `/tests Show how to test date calculations with #src/main/java/com/workshop/copilot/utils/DateUtils.java using java.time.Clock or fixed instants.`
 22. Run the suite (`mvn test jacoco:report`); paste failing output back into Copilot with `/fix` to get remediation suggestions.
+    > **Note**: Some tests may be intentionally failing to demonstrate baseline code quality issues. Use Copilot's `/fix` suggestions to resolve these failing tests as part of the learning process.
 23. Log new coverage numbers in [`NOTES.md`](NOTES.md); highlight >10% improvements.
 
 ## Phase 5 · 13 min · Implement One Safe Refactor
