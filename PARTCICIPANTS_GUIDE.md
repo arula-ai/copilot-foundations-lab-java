@@ -26,54 +26,51 @@
 - When `#codebase` is used with another chat participant (`@terminal`, `@vscode`, `@github` etc.), it provides context to that participant. You can only use one participant at a time, so that is why it is needed.
 - `#codebase` is still experimental, but the general consensus seem to be to just use `#codebase`. By itself it gives you your workspace context like you would want, and it can also be paired with any other chat participants (unlike `@workspace` which also requires a slash command and cannot be paired with any other participant)
 
-8. Record baseline tests:
-   - Angular: `#runInTerminal npx ng test --code-coverage --watch=false`
-   - Java: `#runInTerminal mvn test jacoco:report`
-   Note coverage % and failing specs in a file called `NOTES.md`.
-9. Run `#runInTerminal npm run lint` or `#runInTerminal mvn -pl app checkstyle:check` and capture warning counts; drop them into `NOTES.md`.
-10. Ask Copilot: `Draft a baseline metrics section for NOTES.md summarizing current coverage, lint issues, and failing tests.` Accept and edit as needed.
+8. Record baseline tests by running `#runInTerminal mvn test jacoco:report`.
+   Note coverage % and failing specs in a file called [`NOTES.md`](NOTES.md).
+9. Run `#runInTerminal mvn checkstyle:check` and capture warning counts; drop them into [`NOTES.md`](NOTES.md).
+10. Ask Copilot: `Draft a baseline metrics section for #NOTES.md summarizing current coverage, lint issues, and failing tests.` Accept and edit as needed.
 
 ## Phase 2 · 10 min · Prompting Mastery
-11. Reference the main target file (e.g., `#date-helper.service.ts`) into Copilot Chat with this prompt:
-    - `@workspace /expalin this legacy #date-helper.service.ts file and any responsibilities,
-    external dependencies and hidden side effects.
+11. Reference the main target file (e.g., [`DateUtils.java`](src/main/java/com/workshop/copilot/utils/DateUtils.java)) in Copilot Chat with this prompt:
+    - `@workspace /explain this legacy #DateUtils.java file and any responsibilities, external dependencies, and hidden side effects.`
 12. Follow up with the Critique then Create pattern:
-    - `@workspace /explain Analyze this #date-helper.service.ts for code smells, performance risks, and security issues. Organize findings by severity.`
-13. `Create RISKS.md, grouping items under Critical / High / Medium.`
-14. Run a targeted search (`#runInTerminal rg "DateHelperService" src`) to see usage of DateHelperService accorss the codebase:
+    - `@workspace /explain Analyze this #DateUtils.java for code smells, performance risks, and security issues. Organize findings by severity.`
+13. Create [`RISKS.md`](RISKS.md), grouping items under Critical / High / Medium.
+14. Run a targeted search (`#runInTerminal rg "DateUtils" src/main/java`) to see usage of DateUtils across the codebase:
     - `/explain From these call sites, what downstream impact should I watch for when refactoring?`
-15. Use Golden Example prompt: `/explain Show me an idiomatic Angular service test from this repo I can mirror.` Link the example Copilot returns.
+15. Use Golden Example prompt: `/explain Show me an idiomatic JUnit test for #OrderService.java from this repo I can mirror.` Link the example Copilot returns.
 
 ## Phase 3 · 7 min · Refactor Plan with Copilot
-16. Ask Copilot: `@workspace /explain Create a numbered refactor plan for #date-helper.service.ts that addresses Critical items in #RISKS.md first, each with success criteria and required tests.`
-17. Paste the response into `REFACTOR_PLAN.md`;
+16. Ask Copilot: `@workspace /explain Create a numbered refactor plan for #DateUtils.java that addresses Critical items in #RISKS.md first, each with success criteria and required tests.`
+17. Paste the response into [`REFACTOR_PLAN.md`](REFACTOR_PLAN.md);
 18. For each plan step, ask Copilot to generate verification criteria: `/explain For Step 1 above, how will I prove success via tests or metrics?`
 
 ## Phase 4 · 10 min · Test Generation Sprint
-19. Use Copilot `/tests Generate baseline unit tests for date-helper.service focusing on happy paths.`
-20. Iterate: `/tests Add edge-case coverage for invalid dates, DST transitions, and leap years. Use Angular TestBed.`
-21. For async logic, prompt: `/tests Create tests using fakeAsync and tick for the timer-based code.`
-22. Run the suite (`ng test --code-coverage` or `mvn test jacoco:report`); paste failing output back into Copilot with `/fix` to get remediation suggestions.
-23. Log new coverage numbers in `NOTES.md`; highlight >10% improvements.
+19. Use Copilot `/tests Generate baseline unit tests for #DateUtils.java focusing on happy paths.`
+20. Iterate: `/tests Add edge-case coverage for invalid dates, DST transitions, and leap years using JUnit 5.`
+21. For time-sensitive logic, prompt: `/tests Show how to test date calculations with #src/main/java/com/workshop/copilot/utils/DateUtils.java using java.time.Clock or fixed instants.`
+22. Run the suite (`mvn test jacoco:report`); paste failing output back into Copilot with `/fix` to get remediation suggestions.
+23. Log new coverage numbers in [`NOTES.md`](NOTES.md); highlight >10% improvements.
 
 ## Phase 5 · 13 min · Implement One Safe Refactor
-24. Pick a `REFACTOR_PLAN.md` Step with Low risk.
-25. Before editing, ask Copilot inline: `// Copilot: rewrite this method using RxJS switchMap and takeUntil.` Accept or adjust suggestions.
-26. When Copilot proposes changes, demand explanations: `/explain Why did you choose switchMap here? Are there any regressions to watch for?`
-27. Keep diffs small; after each save, run `ng test --watch=false` or module-specific Maven tests.
+24. Pick a [`REFACTOR_PLAN.md`](REFACTOR_PLAN.md) Step with Low risk.
+25. Before editing, ask Copilot inline: `// Copilot: rewrite this method using java.time APIs and remove shared mutable state.` Accept or adjust suggestions.
+26. When Copilot proposes changes, demand explanations: `/explain Why did you choose java.time here? Are there any regressions to watch for?`
+27. Keep diffs small; after each save, run `mvn test` or targeted Maven modules.
 28. If Copilot's change fails tests, use `/fix` with the failing stack trace to generate patches.
 
 ## Phase 6 · 10 min · Documentation and PR Prep
-29. Ask Copilot: `/docs Generate docstring comments for the refactored public APIs using Angular style.`
-30. Update `RISKS.md` with resolved items; prompt Copilot: `/docs Summarize which risks were mitigated by the refactor.`
-31. Generate a PR summary: `/docs Draft a pull request description including summary, testing, coverage changes, and risk assessment.` Save to `docs/PR_DRAFT.md`.
-32. Request release notes: `/docs Create a short changelog entry for this refactor.` Append to `docs/CHANGELOG.md`.
+29. Ask Copilot: `/docs Generate Javadoc comments for the refactored public APIs using the project's conventions.`
+30. Update [`RISKS.md`](RISKS.md) with resolved items; prompt Copilot: `/docs Summarize which risks were mitigated by the refactor in #RISKS.md.`
+31. Generate a PR summary: `/docs Draft a pull request description for #docs/PR_DRAFT.md including summary, testing, coverage changes, and risk assessment.` Save to [`docs/PR_DRAFT.md`](docs/PR_DRAFT.md).
+32. Request release notes: `/docs Create a short changelog entry for this refactor in #docs/CHANGELOG.md.` Append to [`docs/CHANGELOG.md`](docs/CHANGELOG.md).
 
 ## Phase 7 · 5 min · Sharing & Wrap-Up
-33. Capture insights: `/docs Summarize the prompt patterns that worked best for me today.` Append to `NOTES.md` under “Prompts That Worked.”
-34. Ask Copilot: `/docs Produce a retrospective bullet list (Start/Stop/Continue) for my next session.` Save to `docs/session-notes/<date>.md`.
+33. Capture insights: `/docs Summarize the prompt patterns that worked best for me today for #NOTES.md.` Append to [`NOTES.md`](NOTES.md) under “Prompts That Worked.”
+34. Ask Copilot: `/docs Produce a retrospective bullet list (Start/Stop/Continue) for my next session in #docs/session-notes/<date>.md.` Save to [`docs/session-notes/<date>.md`](docs/session-notes/<date>.md).
 35. Run `git status`; ensure only intentional files changed.
-36. Stage and commit: `git add .` → `git commit -m "Lab: Refactor date helper with Copilot assistance"`.
+36. Stage and commit: `git add .` → `git commit -m "Lab: Refactor DateUtils with Copilot assistance"`.
 37. Push the branch and open a pull request. Paste Copilot’s PR draft into the description and edit as needed.
 38. Post a 1–2 sentence insight in team Slack summarizing what Copilot accelerated for you.
 
